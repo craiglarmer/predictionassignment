@@ -1,0 +1,130 @@
+---
+title: "Prediction Assignment"
+author: "Craig Larmer"
+date: "29 January 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Executive Summary
+
+The goal of this analysis is to predict "how well" a weight lifting exercise was performed based on on-body sensor measurements taken during the exercise.  Details of the dataset and method of collection are available at this website: http://groupware.les.inf.puc-rio.br/har#weight_lifting_exercises
+
+The training dataset provided has 19,622 rows of classified data.  Each row has been classified into one of 5 states that classify the exercise into well performed (value A) or one of 4 common issues when performing the exercise (values B, C, D & E).  A separate testing dataset was provided with 20 unclassified rows.
+
+The training dataset was split into a training and validation dataset and a variety of general purpose classification algorithms were assessed.  
+
+The algorithm scoring the highest accuracy was Random Forest with an accuracy score of 99.5%.  This model achieved a 100% result when applied against the testing dataset.
+
+## Exploratory Data Analysis and Cleaning
+
+Reviewing the dataset it was observed that a number of the 160 column were blank or NA.  These columns are aggregation columns that summarize a set of time intervals.  It was decided that these columns should be excluded and the analysis continue with the raw detail records.
+
+The data was partitioned into a testing and training dataset with 75% of data in the training set.
+
+```{r init,echo=FALSE,cache=TRUE}
+library(dplyr)
+library(ggplot2)
+library(caret)
+library(e1071)
+# read in files downloaded from https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv
+pmltraining <- read.csv("pml-training.csv")
+pmltesting <- read.csv("pml-testing.csv")
+
+# create data frame of raw reading data then exclude columsn that start with: avg, stddev, var, kurtosis, skewness, amplitude
+wld <- tbl_df(pmltraining) %>% dplyr::select(-starts_with("max"),-starts_with("min"), -starts_with("avg"),-starts_with("stddev"),-starts_with("var"),-starts_with("kurtosis"),-starts_with("skewness"),-starts_with("amplitude"))
+set.seed(2809)
+inTrain <- createDataPartition(y = pmltraining$classe,p=0.75,list=FALSE)
+training <- wld[inTrain,]
+testing <- wld[-inTrain,]
+
+```
+
+## Models
+
+The following models were assessed: Random Forest, Gradient Boost, Linear Discriminant Analysis, Support Vector Machine. These models were selected for their general purpose classification capabilities. Finally, a stacked ensemble model was assessed.
+
+The following sections describe the results and out of sample error for each model.  Refer to the Appendix for information on each model.  The default Bootstrap resampling method with 25 repetitions was applied.
+
+### Random Forest
+``` {r rfx,echo=FALSE,cache=TRUE}
+
+rf <- train(classe ~ .,data = training[,8:60],method="rf", verbose=FALSE)
+predrf <- predict(rf,newdata = testing)
+confusionMatrix(testing$classe,predrf)
+```
+
+### Stochastic Gradient Boosting
+``` {r gb,echo=FALSE,cache=TRUE}
+gb <- train(classe ~ .,data = training[,8:60],method="gbm", verbose=FALSE)
+predgb <- predict(gb,newdata = testing)
+confusionMatrix(testing$classe,predgb)
+```
+
+### Linear Discriminant Analysis
+``` {r ld,echo=FALSE,cache=TRUE}
+ld <- train(classe ~ .,data = training[,8:60],method="lda", verbose=FALSE)
+predld <- predict(ld,newdata = testing)
+confusionMatrix(testing$classe,predld)
+```
+
+### Support Vector Machine
+``` {r svm,echo=FALSE,cache=TRUE}
+svm <- svm(classe ~ .,data = training[,8:60])
+predsvm <- predict(svm,newdata = testing)
+confusionMatrix(testing$classe,predsvm)
+```
+
+### Ensemble Model
+
+Stack the available models and build a Random Forest model on the resulting data set.
+
+```{r es,echo=FALSE,cache=TRUE}
+es <- data.frame(classe = testing$classe,rfp = predrf,gbp = predgb,ldp = predld,svmp = predsvm )
+#es <- data.frame(classe = testing$classe,ldp = predld,svmp = predsvm,gbp = predgb )
+es_mdl <- train(classe ~ .,data = es,method = "rf")
+predes <- predict(es_mdl,newdata = es)
+confusionMatrix(testing$classe,predes)
+```
+
+## Summary
+
+The models were assess based on the Accuracy and Kappa values.  All of the models performed well except for Linear Discriminant Analysis.  
+
+The ensemble model had a fractionally higher accuracy but the added complexity and processing time did not warrant the gain.  The marginal gain was potentially attributable to the high correlation of results between the models (excepting Linear Discriminat Analysis)
+
+The results determine that the Random Forest model is selected to predict the unclassified testing dataset provided.
+
+The predicted classe's for the 20 rows are (in row order): B A B A A E D B A A B C B A E E A B B B.  
+
+## Appendix A - Models
+
+###Random Forest Model
+```{r rfmdl,echo=FALSE,cache=TRUE}
+rf
+```
+
+### Stochastic Gradient Boosting Model
+``` {r gbmdl,echo=FALSE,cache=TRUE}
+gb
+```
+
+### Linear Discriminant Analysis Model
+``` {r ldmdl,echo=FALSE,cache=TRUE}
+ld
+```
+
+### Support Vector Machine Model
+``` {r svmmdl,echo=FALSE,cache=TRUE}
+svm
+```
+
+## Appendix B - Unclassified Test Data Predictions
+
+The predicted classe's for the 20 rows are:
+```{r predtest, echo=FALSE,cache=TRUE}
+predfinal<-predict(rf,newdata = pmltesting)
+predfinal
+```

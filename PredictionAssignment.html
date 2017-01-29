@@ -185,28 +185,6 @@ $(document).ready(function () {
 </div>
 <div id="stochastic-gradient-boosting" class="section level3">
 <h3>Stochastic Gradient Boosting</h3>
-<pre><code>## Loading required package: gbm</code></pre>
-<pre><code>## Loading required package: survival</code></pre>
-<pre><code>## 
-## Attaching package: 'survival'</code></pre>
-<pre><code>## The following object is masked from 'package:caret':
-## 
-##     cluster</code></pre>
-<pre><code>## Loading required package: splines</code></pre>
-<pre><code>## Loading required package: parallel</code></pre>
-<pre><code>## Loaded gbm 2.1.1</code></pre>
-<pre><code>## Loading required package: plyr</code></pre>
-<pre><code>## -------------------------------------------------------------------------</code></pre>
-<pre><code>## You have loaded plyr after dplyr - this is likely to cause problems.
-## If you need functions from both plyr and dplyr, please load plyr first, then dplyr:
-## library(plyr); library(dplyr)</code></pre>
-<pre><code>## -------------------------------------------------------------------------</code></pre>
-<pre><code>## 
-## Attaching package: 'plyr'</code></pre>
-<pre><code>## The following objects are masked from 'package:dplyr':
-## 
-##     arrange, count, desc, failwith, id, mutate, rename, summarise,
-##     summarize</code></pre>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
@@ -241,12 +219,6 @@ $(document).ready(function () {
 </div>
 <div id="linear-discriminant-analysis" class="section level3">
 <h3>Linear Discriminant Analysis</h3>
-<pre><code>## Loading required package: MASS</code></pre>
-<pre><code>## 
-## Attaching package: 'MASS'</code></pre>
-<pre><code>## The following object is masked from 'package:dplyr':
-## 
-##     select</code></pre>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
@@ -352,9 +324,10 @@ $(document).ready(function () {
 <div id="summary" class="section level2">
 <h2>Summary</h2>
 <p>The models were assess based on the Accuracy and Kappa values. All of the models performed well except for Linear Discriminant Analysis.</p>
-<p>The ensemble model had a fractionally higher accuracy but the added complexity and processing time did not warrant the gain. The marginal gain was potentially attributable to the high correlation of results between the models (excepting Linear Discriminat Analysis)</p>
+<p>The ensemble model had a fractionally higher accuracy than the Random Forest model but the added complexity and processing time of the ensemble did not warrant the gain. The marginal gain was potentially attributable to the high correlation of results between the models (excepting Linear Discriminat Analysis)</p>
 <p>The results determine that the Random Forest model is selected to predict the unclassified testing dataset provided.</p>
 <p>The predicted classe’s for the 20 rows are (in row order): B A B A A E D B A A B C B A E E A B B B.</p>
+<p>The study shows that on-body sensors can be used to accurately determine “how well” an exercise is performed.</p>
 </div>
 <div id="appendix-a---models" class="section level2">
 <h2>Appendix A - Models</h2>

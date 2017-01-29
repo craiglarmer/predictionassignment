@@ -93,11 +93,13 @@ confusionMatrix(testing$classe,predes)
 
 The models were assess based on the Accuracy and Kappa values.  All of the models performed well except for Linear Discriminant Analysis.  
 
-The ensemble model had a fractionally higher accuracy but the added complexity and processing time did not warrant the gain.  The marginal gain was potentially attributable to the high correlation of results between the models (excepting Linear Discriminat Analysis)
+The ensemble model had a fractionally higher accuracy than the Random Forest model but the added complexity and processing time of the ensemble did not warrant the gain.  The marginal gain was potentially attributable to the high correlation of results between the models (excepting Linear Discriminat Analysis)
 
 The results determine that the Random Forest model is selected to predict the unclassified testing dataset provided.
 
 The predicted classe's for the 20 rows are (in row order): B A B A A E D B A A B C B A E E A B B B.  
+
+The study shows that on-body sensors can be used to accurately determine "how well" an exercise is performed.
 
 ## Appendix A - Models
 
